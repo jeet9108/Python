@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import messagebox
-import mysql.connector
+import webbrowser
 import os
 import sys
 
@@ -17,22 +16,9 @@ def go_back():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.system(f'python "{os.path.join(script_dir, "dashboard.py")}" --window-state "{state}"')
 
-def test_connection():
-    try:
-        host_val = e_host.get()
-        user_val = e_user.get()
-        pass_val = e_pass.get()
-        
-        mydb = mysql.connector.connect(
-            host=host_val,
-            user=user_val,
-            password=pass_val
-        )
-        if mydb:
-            messagebox.showinfo("Success", "Connection Established Successfully")
-            mydb.close()
-    except Exception as e:
-        messagebox.showerror("Error", f"Connection Error: {e}")
+def open_phpmyadmin():
+    """Open phpMyAdmin directly in the user's default browser."""
+    webbrowser.open("http://localhost/phpmyadmin/index.php?route=/database/structure&db=ca")
 
 window = Tk()
 window.title("AuditPro - Database Manager")
@@ -62,35 +48,24 @@ lbl_role.pack(pady=10)
 btn_back = Button(sidebar, text="Back to Dashboard", bg="white", font=("Arial Black", 12), width=20, command=go_back)
 btn_back.pack(pady=5)
 
-# Content
+# Content area
 content_area = Frame(window, bg="#ecf0f1")
 content_area.pack(side=LEFT, fill=BOTH, expand=True)
 
 lbl_title = Label(content_area, text="Database Manager", font=("Arial Black", 24), bg="#ecf0f1", fg="#2c3e50")
 lbl_title.place(x=50, y=40)
 
-# Form
+# Form Frame for the button
 form_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
-form_frame.place(x=50, y=100, width=500, height=350)
+form_frame.place(x=50, y=100, width=600, height=300)
 
-lbl_host = Label(form_frame, text="Host:", font=("Arial Black", 11), bg="white")
-lbl_host.place(x=50, y=50)
-e_host = Entry(form_frame, width=25)
-e_host.insert(0, "localhost")
-e_host.place(x=180, y=50)
+lbl_info = Label(form_frame, text="Managed the 'ca' database structure via phpMyAdmin", font=("Arial Black", 14), bg="white", fg="#2c3e50")
+lbl_info.place(relx=0.5, y=50, anchor=CENTER)
 
-lbl_user = Label(form_frame, text="User:", font=("Arial Black", 11), bg="white")
-lbl_user.place(x=50, y=100)
-e_user = Entry(form_frame, width=25)
-e_user.insert(0, "root")
-e_user.place(x=180, y=100)
+icon_label = Label(form_frame, text="🌐", font=("Arial", 48), bg="white", fg="#f39c12")
+icon_label.place(relx=0.5, y=120, anchor=CENTER)
 
-lbl_pass = Label(form_frame, text="Password:", font=("Arial Black", 11), bg="white")
-lbl_pass.place(x=50, y=150)
-e_pass = Entry(form_frame, width=25, show="*")
-e_pass.place(x=180, y=150)
-
-btn_test = Button(form_frame, text="Test Connection", bg="#3498db", fg="white", font=("Arial Black", 11, "bold"), width=15, command=test_connection)
-btn_test.place(x=150, y=220)
+btn_open = Button(form_frame, text="Open phpMyAdmin", bg="#f39c12", fg="white", font=("Arial Black", 14, "bold"), width=30, pady=5, command=open_phpmyadmin)
+btn_open.place(relx=0.5, y=200, anchor=CENTER)
 
 window.mainloop()
