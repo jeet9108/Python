@@ -226,7 +226,7 @@ lbl_title.place(x=50, y=40)
 # Hint label
 lbl_hint = Label(content_area, text="Double-click a file to open it. Changes saved in the app will be auto-saved.",
                  font=("Arial", 10), bg="#ecf0f1", fg="#7f8c8d")
-lbl_hint.place(x=50, y=75)
+lbl_hint.place(x=60, y=80)
 
 # Main frame for working papers view
 form_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
