@@ -2,49 +2,65 @@ from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import os
-import mysql.connector
+# import mysql.connector
+
 
 def open_dashboard():
     window.destroy()
-    os.system('python dashboard.py')
+    os.system('python test3.py')
+
 
 def check_login():
     user = username_entry.get()
     passw = password_entry.get()
-    logintodb(user, passw)
 
+    # Temporary login (since DB is commented)
+    if user == "admin" and passw == "1234":
+        message_label.config(text="Login Successful", fg="green")
+        window.after(1000, open_dashboard)
+    else:
+        message_label.config(text="Wrong Username or Password", fg="red")
+
+
+# ---------------- DATABASE CODE (COMMENTED) ----------------
+'''
 def logintodb(user, passw):
     con = mysql.connector.connect(
-              host="localhost",
-              user="root",
-              password="",
-              database="ca"
-              )
-    cursor = con.cursor()          
-    # A Table in the database
-    savequery = "select * from login"      
+        host="localhost",
+        user="root",
+        password="",
+        database="ca"
+    )
+    cursor = con.cursor()
+
+    savequery = "select * from login"
+
     try:
         cursor.execute(savequery)
         myresult = cursor.fetchall()
-        status=False  
-        # Printing the result of the
-        # query
+        status = False
+
         for x in myresult:
-            if x[0]==user and x[1]==passw :
-                status=True
-                break;
-        if status:     
+            if x[0] == user and x[1] == passw:
+                status = True
+                break
+
+        if status:
             message_label.config(text="Login Successful", fg="green")
             window.after(1000, open_dashboard)
         else:
-            message_label.config(text="Wrong Username or Password", fg="red")  
+            message_label.config(text="Wrong Username or Password", fg="red")
+
     except:
-        con.rollback()
-        print("Error occured")
+        print("Error occurred")
+'''
+# ----------------------------------------------------------
+
 
 def clear_data():
     username_entry.delete(0, END)
     password_entry.delete(0, END)
+
 
 window = Tk()
 window.title("AuditPro - Login")
@@ -56,6 +72,7 @@ bg_photo = ImageTk.PhotoImage(bg_img.resize((950, 533)))
 image_label = Label(window, image=bg_photo)
 image_label.place(relx=0, rely=0, relwidth=1, relheight=1)
 
+
 def resize_image(event):
     global bg_photo
     if event.width > 1 and event.height > 1:
@@ -63,13 +80,15 @@ def resize_image(event):
         bg_photo = ImageTk.PhotoImage(resized)
         image_label.config(image=bg_photo)
 
+
 window.bind("<Configure>", resize_image)
 
 title = Label(window, text="AuditPro", font=("Arial Black", 24, "bold"), fg="#2c3e50", bg="white")
-title.place(relx=0.5, y=80, anchor="center")
+title.place(relx=0.5, y=70, anchor="center")
 
-subtitle = Label(window, text="An interface for audit management", font=("Arial Black", 12), fg="#7f8c8d", bg="white")
-subtitle.place(relx=0.5, y=120, anchor="center")
+subtitle = Label(window, text="An interface for audit management",
+                 font=("Arial Black", 12), fg="#7f8c8d", bg="white")
+subtitle.place(relx=0.5, y=100, anchor="center")
 
 form = Frame(window, bg="white", width=400, height=300, bd=2, relief=GROOVE)
 form.place(relx=0.5, rely=0.5, anchor="center")
@@ -88,10 +107,12 @@ lbl_pass.place(x=50, y=130)
 password_entry = Entry(form, width=25, show="*")
 password_entry.place(x=160, y=130)
 
-login_button = Button(form, text="Login", bg="#3498db", fg="white", font=("Arial Black", 11, "bold"), width=12, command=check_login)
+login_button = Button(form, text="Login", bg="#3498db", fg="white",
+                      font=("Arial Black", 11, "bold"), width=12, command=check_login)
 login_button.place(x=60, y=200)
 
-clear_button = Button(form, text="Clear", bg="#e74c3c", fg="white", font=("Arial Black", 11, "bold"), width=12, command=clear_data)
+clear_button = Button(form, text="Clear", bg="#e74c3c", fg="white",
+                      font=("Arial Black", 11, "bold"), width=12, command=clear_data)
 clear_button.place(x=200, y=200)
 
 message_label = Label(form, text="", font=("Arial", 10), bg="white")

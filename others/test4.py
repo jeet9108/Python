@@ -1,12 +1,11 @@
 from tkinter import *
-def open_dashboard():
-    window.destroy()
-    os.system('python dashboard.py')
+from tkinter import messagebox
+from PIL import Image, ImageTk
+import os
 
-def logout_to_login:
-    user = username_entry.get()
-    passw = password_entry.get()
-    logintodb(user, passw)
+def close_dashboard():
+    window.destroy()
+    os.system('python test3.py')
 
 window = Tk()
 window.title("AuditPro")
@@ -18,6 +17,9 @@ sidebar.pack_propagate(False)
 
 lbl_logo = Label(sidebar, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
 lbl_logo.pack(pady=30)
+
+lbl_role = Label(sidebar, text="Role: CA_Yogesh_Shah", bg="#2c3e50", fg="#bdc3c7", font=("Arial Black", 10))
+lbl_role.pack(pady=10)
 
 btn_dash = Button(sidebar, text="Dashboard", bg="white", font=("Arial Black", 12), width=20)
 btn_dash.pack(pady=5)
@@ -31,7 +33,7 @@ btn_user_mgmt.pack(pady=5)
 btn_db = Button(sidebar, text="Database Manager", bg="white", font=("Arial Black", 12), width=20)
 btn_db.pack(pady=5)
 
-btn_logout = Button(sidebar, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20, command = logout_to_login)
+btn_logout = Button(sidebar, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20,command=close_dashboard)
 btn_logout.pack(side=BOTTOM, pady=20)
 
 content_area = Frame(window, bg="#ecf0f1")
