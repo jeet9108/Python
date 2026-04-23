@@ -115,14 +115,15 @@ btn_db.pack(pady=5)
 btn_logout = Button(sidebar, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20, command=logout)
 btn_logout.pack(side=BOTTOM, pady=20)
 
-content_area = Frame(window, bg="#ecf0f1")
+content_area = Frame(window, bg="#e1f5fe")
 content_area.pack(side=LEFT, fill=BOTH, expand=True)
 
-lbl_welcome = Label(content_area, text="Welcome back, CA Yogesh Shah", font=("Arial Black", 24), bg="#ecf0f1", fg="#2c3e50")
+
+lbl_welcome = Label(content_area, text="Welcome back, CA Yogesh Shah", font=("Arial Black", 24), bg="#e1f5fe", fg="#2c3e50")
 lbl_welcome.place(x=50, y=40)
 
 # Cards frame
-cards_frame = Frame(content_area, bg="#ecf0f1")
+cards_frame = Frame(content_area, bg="#e1f5fe")
 cards_frame.place(relx=0.5, rely=0.18, anchor="center")
 
 card1 = Frame(cards_frame, bg="white", width=250, height=120, bd=1, relief=SOLID)
