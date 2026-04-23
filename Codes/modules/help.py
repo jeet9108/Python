@@ -1,27 +1,13 @@
 from tkinter import *
-from tkinter import filedialog, messagebox
+from PIL import Image, ImageTk
 import os
 import sys
-import shutil
-import mysql.connector
 
-# Directory to store copies of taxing standards and guidelines
+# Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
-STORAGE_DIR = os.path.abspath(os.path.join(script_dir, "..", "..", "help_documents_storage"))
-if not os.path.exists(STORAGE_DIR):
-    os.makedirs(STORAGE_DIR)
-
-def get_db_connection():
-    """Get a MySQL database connection."""
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="ca"
-    )
 
 def get_window_state():
-    """Get the current window state to pass to the next module."""
+    """Get the current window state to pass back to the dashboard."""
     if window.state() == 'zoomed':
         return 'zoomed'
     else:
@@ -32,93 +18,8 @@ def go_back():
     window.destroy()
     os.system(f'python "{os.path.join(script_dir, "dashboard.py")}" --window-state "{state}"')
 
-def load_documents_from_db():
-    """Load help documents from the database and display in the listbox."""
-    docs_listbox.delete(0, END)
-    try:
-        con = get_db_connection()
-        cursor = con.cursor()
-        cursor.execute("SELECT filename FROM help_documents ORDER BY created_at DESC")
-        rows = cursor.fetchall()
-        for row in rows:
-            docs_listbox.insert(END, row[0])
-        con.close()
-    except Exception as e:
-        messagebox.showerror("Database Error", f"Could not load documents: {e}")
-
-def attach_document():
-    filepath = filedialog.askopenfilename(title="Select Standard/Guideline Documents")
-    if filepath:
-        filename = os.path.basename(filepath)
-        dest_path = os.path.join(STORAGE_DIR, filename)
-
-        # Handle duplicate filenames
-        base, ext = os.path.splitext(filename)
-        counter = 1
-        while os.path.exists(dest_path):
-            filename = f"{base}_{counter}{ext}"
-            dest_path = os.path.join(STORAGE_DIR, filename)
-            counter += 1
-
-        # Copy the file to storage directory
-        shutil.copy2(filepath, dest_path)
-
-        # Insert into database
-        try:
-            con = get_db_connection()
-            cursor = con.cursor()
-            cursor.execute(
-                "INSERT INTO help_documents (filename, filepath) VALUES (%s, %s)",
-                (filename, dest_path)
-            )
-            con.commit()
-            con.close()
-        except Exception as e:
-            messagebox.showerror("Database Error", f"Could not save to database: {e}")
-            return
-
-        # Refresh the listbox
-        load_documents_from_db()
-
-def open_document(event=None):
-    """Open the selected document."""
-    selected = docs_listbox.curselection()
-    if not selected:
-        return
-    filename = docs_listbox.get(selected[0])
-    stored_path = os.path.join(STORAGE_DIR, filename)
-
-    if os.path.exists(stored_path):
-        os.startfile(stored_path)
-    else:
-        messagebox.showerror("Error", f"File not found:\n{stored_path}")
-
-def remove_document():
-    selected = docs_listbox.curselection()
-    if selected:
-        filename = docs_listbox.get(selected[0])
-        confirm = messagebox.askyesno("Confirm", f"Remove '{filename}'?")
-        if not confirm:
-            return
-
-        try:
-            con = get_db_connection()
-            cursor = con.cursor()
-            cursor.execute("DELETE FROM help_documents WHERE filename = %s", (filename,))
-            con.commit()
-            con.close()
-        except Exception as e:
-            messagebox.showerror("Database Error", f"Could not delete from database: {e}")
-            return
-
-        stored_path = os.path.join(STORAGE_DIR, filename)
-        if os.path.exists(stored_path):
-            os.remove(stored_path)
-
-        load_documents_from_db()
-
 window = Tk()
-window.title("AuditPro - Help & Guidelines")
+window.title("AuditPro - Help (Accounting Standards)")
 window.geometry("1000x700")
 
 # Restore window state
@@ -146,30 +47,47 @@ btn_back.pack(pady=5)
 content_area = Frame(window, bg="#e1f5fe")
 content_area.pack(side=LEFT, fill=BOTH, expand=True)
 
-lbl_title = Label(content_area, text="AuditPro - Help", font=("Arial Black", 24), bg="#e1f5fe", fg="#2c3e50")
-lbl_title.place(x=50, y=40)
+lbl_title = Label(content_area, text="Accounting Standards Reference", font=("Arial Black", 20), bg="#e1f5fe", fg="#2c3e50")
+lbl_title.pack(pady=20)
 
-lbl_desc = Label(content_area, text="", font=("Arial", 12), bg="#e1f5fe", fg="#34495e")
-lbl_desc.place(x=50, y=90)
+# Frame for the Image (Scrollable if needed)
+image_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
+image_frame.pack(padx=30, pady=10, fill=BOTH, expand=True)
 
-form_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
-form_frame.place(x=50, y=130, width=700, height=450)
+# Add a Canvas and Scrollbar for the image
+canvas = Canvas(image_frame, bg="white")
+scrollbar = Scrollbar(image_frame, orient=VERTICAL, command=canvas.yview)
+scrollable_frame = Frame(canvas, bg="white")
 
-docs_listbox = Listbox(form_frame, font=("Arial", 12), width=70, height=15)
-docs_listbox.pack(pady=20, padx=20)
-docs_listbox.bind("<Double-Button-1>", open_document)
+scrollable_frame.bind(
+    "<Configure>",
+    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+)
 
-btn_frame = Frame(form_frame, bg="white")
-btn_frame.pack(pady=10, fill=X, padx=20)
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+canvas.configure(yscrollcommand=scrollbar.set)
 
-btn_attach = Button(btn_frame, text="Upload Guideline", bg="#3498db", fg="white", font=("Arial Black", 10), command=attach_document)
-btn_attach.pack(side=LEFT, padx=5)
+canvas.pack(side=LEFT, fill=BOTH, expand=True)
+scrollbar.pack(side=RIGHT, fill=Y)
 
-btn_open = Button(btn_frame, text="Open Document", bg="#27ae60", fg="white", font=("Arial Black", 10), command=open_document)
-btn_open.pack(side=LEFT, padx=5)
+# Load and Display the Image
+try:
+    img_path = os.path.join(script_dir, "..", "..", "Images", "as_standards.png")
+    help_img = Image.open(img_path)
+    
+    # Resize image to fit width while maintaining aspect ratio
+    original_width, original_height = help_img.size
+    display_width = 700
+    display_height = int((display_width / original_width) * original_height)
+    
+    help_img_resized = help_img.resize((display_width, display_height), Image.Resampling.LANCZOS)
+    photo = ImageTk.PhotoImage(help_img_resized)
+    
+    img_label = Label(scrollable_frame, image=photo, bg="white")
+    img_label.image = photo  # Keep reference
+    img_label.pack()
+except Exception as e:
+    Label(scrollable_frame, text=f"Could not load 'as_standards.png'.\nPlease ensure the image is in the Images folder.", 
+          font=("Arial", 12), bg="white", fg="red").pack(pady=100)
 
-btn_remove = Button(btn_frame, text="Remove", bg="#e74c3c", fg="white", font=("Arial Black", 10), command=remove_document)
-btn_remove.pack(side=RIGHT, padx=5)
-
-load_documents_from_db()
 window.mainloop()
