@@ -72,7 +72,7 @@ scrollbar.pack(side=RIGHT, fill=Y)
 
 # Load and Display the Image
 try:
-    img_path = os.path.join(script_dir, "..", "..", "Images", "as_standards.png")
+    img_path = os.path.join(script_dir, "..", "..", "Images", "img4.png")
     help_img = Image.open(img_path)
     
     # Resize image to fit width while maintaining aspect ratio
@@ -87,7 +87,7 @@ try:
     img_label.image = photo  # Keep reference
     img_label.pack()
 except Exception as e:
-    Label(scrollable_frame, text=f"Could not load 'as_standards.png'.\nPlease ensure the image is in the Images folder.", 
+    Label(scrollable_frame, text=f"Could not load 'img4.png'.\nPlease ensure the image is in the Images folder.", 
           font=("Arial", 12), bg="white", fg="red").pack(pady=100)
 
 window.mainloop()
