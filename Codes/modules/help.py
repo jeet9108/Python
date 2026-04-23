@@ -77,7 +77,7 @@ try:
     
     # Resize image to fit width while maintaining aspect ratio
     original_width, original_height = help_img.size
-    display_width = 700
+    display_width = 1200
     display_height = int((display_width / original_width) * original_height)
     
     help_img_resized = help_img.resize((display_width, display_height), Image.Resampling.LANCZOS)
@@ -88,6 +88,6 @@ try:
     img_label.pack()
 except Exception as e:
     Label(scrollable_frame, text=f"Could not load 'img4.png'.\nPlease ensure the image is in the Images folder.", 
-          font=("Arial", 12), bg="white", fg="red").pack(pady=100)
+          font=("Arial", 12), bg="white", fg="red").pack(pady=400)
 
 window.mainloop()
