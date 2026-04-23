@@ -66,6 +66,12 @@ def open_db():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     os.system(f'python "{os.path.join(script_dir, "database_manager.py")}" --window-state "{state}"')
 
+def open_help():
+    state = get_window_state()
+    window.destroy()
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.system(f'python "{os.path.join(script_dir, "help.py")}" --window-state "{state}"')
+
 def logout():
     state = get_window_state()
     window.destroy()
@@ -111,6 +117,9 @@ btn_user_mgmt.pack(pady=5)
 
 btn_db = Button(sidebar, text="Database Manager", bg="white", font=("Arial Black", 12), width=20, command=open_db)
 btn_db.pack(pady=5)
+
+btn_help = Button(sidebar, text="Help & Standards", bg="white", font=("Arial Black", 12), width=20, command=open_help)
+btn_help.pack(pady=5)
 
 btn_logout = Button(sidebar, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20, command=logout)
 btn_logout.pack(side=BOTTOM, pady=20)
