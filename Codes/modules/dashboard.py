@@ -118,7 +118,7 @@ btn_user_mgmt.pack(pady=5)
 btn_db = Button(sidebar, text="Database Manager", bg="white", font=("Arial Black", 12), width=20, command=open_db)
 btn_db.pack(pady=5)
 
-btn_help = Button(sidebar, text="Help & Standards", bg="white", font=("Arial Black", 12), width=20, command=open_help)
+btn_help = Button(sidebar, text="Help", bg="white", font=("Arial Black", 12), width=20, command=open_help)
 btn_help.pack(pady=5)
 
 btn_logout = Button(sidebar, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20, command=logout)

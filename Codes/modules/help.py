@@ -47,7 +47,7 @@ def load_documents_from_db():
         messagebox.showerror("Database Error", f"Could not load documents: {e}")
 
 def attach_document():
-    filepath = filedialog.askopenfilename(title="Select Standard/Guideline Document")
+    filepath = filedialog.askopenfilename(title="Select Standard/Guideline Documents")
     if filepath:
         filename = os.path.basename(filepath)
         dest_path = os.path.join(STORAGE_DIR, filename)
@@ -146,10 +146,10 @@ btn_back.pack(pady=5)
 content_area = Frame(window, bg="#e1f5fe")
 content_area.pack(side=LEFT, fill=BOTH, expand=True)
 
-lbl_title = Label(content_area, text="Help & Taxing Standards", font=("Arial Black", 24), bg="#e1f5fe", fg="#2c3e50")
+lbl_title = Label(content_area, text="AuditPro - Help", font=("Arial Black", 24), bg="#e1f5fe", fg="#2c3e50")
 lbl_title.place(x=50, y=40)
 
-lbl_desc = Label(content_area, text="Upload and view professional guidelines and taxing standards here.", font=("Arial", 12), bg="#e1f5fe", fg="#34495e")
+lbl_desc = Label(content_area, text="", font=("Arial", 12), bg="#e1f5fe", fg="#34495e")
 lbl_desc.place(x=50, y=90)
 
 form_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
