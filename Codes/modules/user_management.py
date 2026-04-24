@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
 import sys
@@ -30,7 +31,6 @@ def back():
     os.system(f'python "{os.path.join(path, "dashboard.py")}" --window-state "{st}"')
 
 def load_data():
-    for w in table.winfo_children(): w.destroy()
     try:
         db = connect()
         cur = db.cursor()
@@ -40,11 +40,11 @@ def load_data():
         if rows:
             for i, (uid, comp, mail) in enumerate(rows):
                 bg = "#f9f9f9" if i % 2 == 0 else "white"
-                row = Frame(table, bg=bg)
+                row = Frame(table)
                 row.pack(fill=X)
-                Label(row, text=str(uid), font=("Arial", 10), bg=bg, width=15, anchor="w").pack(side=LEFT, padx=5, pady=4)
-                Label(row, text=str(comp), font=("Arial", 10), bg=bg, width=25, anchor="w").pack(side=LEFT, padx=5, pady=4)
-                Label(row, text=str(mail), font=("Arial", 10), bg=bg, width=25, anchor="w").pack(side=LEFT, padx=5, pady=4)
+                Label(row, text=str(uid), font=("Arial", 10), width=15, anchor="w").pack(side=LEFT, padx=5, pady=4)
+                Label(row, text=str(comp), font=("Arial", 10),width=25, anchor="w").pack(side=LEFT, padx=5, pady=4)
+                Label(row, text=str(mail), font=("Arial", 10),width=25, anchor="w").pack(side=LEFT, padx=5, pady=4)
             cnt_lbl.config(text=f"Total Users: {len(rows)}")
         else:
             Label(table, text="No users found.", font=("Arial", 11), bg="white", fg="#bdc3c7").pack(pady=30)
@@ -109,8 +109,17 @@ side = Frame(window, bg="#2c3e50", width=250)
 side.pack(side=LEFT, fill=Y)
 side.pack_propagate(False)
 
-logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
-logo.pack(pady=30)
+# Logo
+try:
+    log_path = os.path.join(path, "..", "..", "Images", "img3.jpeg")
+    log_img = Image.open(log_path).resize((150, 100))
+    log_photo = ImageTk.PhotoImage(log_img)
+    logo = Label(side, image=log_photo, bg="#2c3e50")
+    logo.image = log_photo
+except:
+    logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
+logo.pack(pady=20)
+
 
 Button(side, text="Back to Dashboard", bg="white", font=("Arial Black", 12), width=20, command=back).pack(pady=5)
 
@@ -126,7 +135,7 @@ bar.place(x=50, y=95, relwidth=0.85)
 cnt_lbl = Label(bar, text="Total Users: 0", font=("Arial Black", 11), bg="#ecf0f1", fg="#7f8c8d")
 cnt_lbl.pack(side=LEFT)
 
-Button(bar, text="+ Add User", bg="#27ae60", fg="white", font=("Arial Black", 11, "bold"), command=add_user).pack(side=RIGHT)
+Button(bar, text="+ Add User", bg="grey", fg="white", font=("Arial Black", 11, "bold"), command=add_user).pack(side=RIGHT)
 
 box = Frame(main, bg="white", bd=1, relief=SOLID)
 box.place(x=50, y=135, relwidth=0.85, height=420)
@@ -136,15 +145,8 @@ head.pack(fill=X)
 Label(head, text="User ID", fg="white", bg="#2c3e50", width=15, anchor="w").pack(side=LEFT, padx=5, pady=8)
 Label(head, text="Company", fg="white", bg="#2c3e50", width=25, anchor="w").pack(side=LEFT, padx=5, pady=8)
 Label(head, text="Email", fg="white", bg="#2c3e50", width=25, anchor="w").pack(side=LEFT, padx=5, pady=8)
-
-canv = Canvas(box, bg="white", highlightthickness=0)
-scrol = Scrollbar(box, orient=VERTICAL, command=canv.yview)
-table = Frame(canv, bg="white")
-table.bind("<Configure>", lambda e: canv.configure(scrollregion=canv.bbox("all")))
-canv.create_window((0, 0), window=table, anchor="nw")
-canv.configure(yscrollcommand=scrol.set)
-scrol.pack(side=RIGHT, fill=Y)
-canv.pack(fill=BOTH, expand=True)
+table = Frame(box, bg="white")
+table.pack(fill=BOTH, expand=True)
 
 load_data()
 window.mainloop()

@@ -16,7 +16,8 @@ def open_dash():
     os.system(f'python "{os.path.join(path, "dashboard.py")}" --window-state "{st}"')
 
 def check():
-    u, p = e1.get(), e2.get()
+    u= e1.get()
+    p= e2.get()
     try:
         db = mysql.connector.connect(host="localhost", user="root", password="", database="ca")
         cur = db.cursor()
@@ -64,8 +65,19 @@ def resize(e):
 
 window.bind("<Configure>", resize)
 
-Label(window, text="AuditPro", font=("Arial Black", 24, "bold"), fg="#2c3e50", bg="white").place(relx=0.5, y=70, anchor="center")
-Label(window, text="An interface for audit management", font=("Arial Black", 12), fg="#7f8c8d", bg="white").place(relx=0.5, y=100, anchor="center")
+
+try:
+    log_path = os.path.join(path, "..", "..", "Images", "img3.jpeg")
+    log_img = Image.open(log_path).resize((180, 120))
+    log_photo = ImageTk.PhotoImage(log_img)
+    logo = Label(window, image=log_photo, bg="white")
+    logo.image = log_photo
+    logo.place(relx=0.5, y=70, anchor="center")
+except:
+    Label(window, text="AuditPro", font=("Arial Black", 24, "bold"), fg="#2c3e50", bg="white").place(relx=0.5, y=70, anchor="center")
+
+Label(window, text="An interface for audit management", font=("Arial Black", 12), fg="#7f8c8d", bg="white").place(relx=0.5, y=140, anchor="center")
+
 
 box = Frame(window, bg="white", width=400, height=300, bd=2, relief=GROOVE)
 box.place(relx=0.5, rely=0.5, anchor="center")

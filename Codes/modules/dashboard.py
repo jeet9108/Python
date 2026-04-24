@@ -1,7 +1,10 @@
 from tkinter import *
+from PIL import Image, ImageTk
 import os
 import sys
 import mysql.connector
+
+path = os.path.dirname(os.path.abspath(__file__))
 
 def connect():
     return mysql.connector.connect(
@@ -42,7 +45,6 @@ def get_state():
 def goto(script):
     st = get_state()
     window.destroy()
-    path = os.path.dirname(os.path.abspath(__file__))
     os.system(f'python "{os.path.join(path, script)}" --window-state "{st}"')
 
 window = Tk()
@@ -65,8 +67,16 @@ side = Frame(window, bg="#2c3e50", width=250)
 side.pack(side=LEFT, fill=Y)
 side.pack_propagate(False)
 
-logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
-logo.pack(pady=30)
+try:
+    log_path = os.path.join(path, "..", "..", "Images", "img3.jpeg")
+    log_img = Image.open(log_path).resize((150, 100))
+    log_photo = ImageTk.PhotoImage(log_img)
+    logo = Label(side, image=log_photo, bg="#2c3e50")
+    logo.image = log_photo
+except:
+    logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
+logo.pack(pady=20)
+
 
 role = Label(side, text="Role: CA_Yogesh_Shah", bg="#2c3e50", fg="#bdc3c7", font=("Arial Black", 10))
 role.pack(pady=10)
@@ -82,9 +92,6 @@ btn_user.pack(pady=5)
 
 btn_db = Button(side, text="Database Manager", bg="white", font=("Arial Black", 12), width=20, command=lambda: goto("database_manager.py"))
 btn_db.pack(pady=5)
-
-btn_help = Button(side, text="Help", bg="white", font=("Arial Black", 12), width=20, command=lambda: goto("help.py"))
-btn_help.pack(pady=5)
 
 btn_out = Button(side, text="Logout", bg="#c0392b", fg="white", font=("Arial Black", 10, "bold"), width=20, command=lambda: goto("Login.py"))
 btn_out.pack(side=BOTTOM, pady=20)
@@ -133,17 +140,16 @@ Label(head, text="Date", font=("Arial Black", 10), bg="#2c3e50", fg="white", wid
 
 if recent:
     for i, (name, status, date) in enumerate(recent):
-        bg = "#f9f9f9" if i % 2 == 0 else "white"
-        row = Frame(table, bg=bg)
+        row = Frame(table)
         row.pack(fill=X, padx=20)
 
-        Label(row, text=name, font=("Arial", 10), bg=bg, fg="#2c3e50", width=35, anchor="w").pack(side=LEFT, padx=5, pady=4)
+        Label(row, text=name, font=("Arial", 10), fg="#2c3e50", width=35, anchor="w").pack(side=LEFT, padx=5, pady=4)
 
         fg = "#27ae60" if status == "ACCEPTED" else "#e74c3c" if status == "REJECTED" else "#e67e22"
-        Label(row, text=status, font=("Arial", 10, "bold"), bg=bg, fg=fg, width=12, anchor="center").pack(side=LEFT, padx=5, pady=4)
+        Label(row, text=status, font=("Arial", 10, "bold"),fg=fg, width=12, anchor="center").pack(side=LEFT, padx=5, pady=4)
 
         dt = date.strftime("%Y-%m-%d %H:%M") if date else ""
-        Label(row, text=dt, font=("Arial", 10), bg=bg, fg="#7f8c8d", width=18, anchor="center").pack(side=LEFT, padx=5, pady=4)
+        Label(row, text=dt, font=("Arial", 10), fg="#7f8c8d", width=18, anchor="center").pack(side=LEFT, padx=5, pady=4)
 else:
     Label(table, text="No working papers uploaded yet.", font=("Arial", 11), bg="white", fg="#bdc3c7").pack(pady=30)
 

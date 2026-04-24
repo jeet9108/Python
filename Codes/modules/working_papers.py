@@ -1,4 +1,5 @@
 from tkinter import *
+from PIL import Image, ImageTk
 from tkinter import filedialog, messagebox
 import os
 import sys
@@ -128,8 +129,16 @@ side = Frame(window, bg="#2c3e50", width=250)
 side.pack(side=LEFT, fill=Y)
 side.pack_propagate(False)
 
-logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
-logo.pack(pady=30)
+try:
+    log_path = os.path.join(path, "..", "..", "Images", "img3.jpeg")
+    log_img = Image.open(log_path).resize((150, 100))
+    log_photo = ImageTk.PhotoImage(log_img)
+    logo = Label(side, image=log_photo, bg="#2c3e50")
+    logo.image = log_photo
+except:
+    logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
+logo.pack(pady=20)
+
 
 role = Label(side, text="Role: CA_Yogesh_Shah", bg="#2c3e50", fg="#bdc3c7", font=("Arial Black", 10))
 role.pack(pady=10)

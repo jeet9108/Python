@@ -1,7 +1,10 @@
 from tkinter import *
+from PIL import Image, ImageTk
 import webbrowser
 import os
 import sys
+
+path = os.path.dirname(os.path.abspath(__file__))
 
 def get_state():
     if window.state() == 'zoomed':
@@ -11,7 +14,6 @@ def get_state():
 def back():
     st = get_state()
     window.destroy()
-    path = os.path.dirname(os.path.abspath(__file__))
     os.system(f'python "{os.path.join(path, "dashboard.py")}" --window-state "{st}"')
 
 def open_db():
@@ -34,8 +36,16 @@ side = Frame(window, bg="#2c3e50", width=250)
 side.pack(side=LEFT, fill=Y)
 side.pack_propagate(False)
 
-logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
-logo.pack(pady=30)
+try:
+    log_path = os.path.join(path, "..", "..", "Images", "img3.jpeg")
+    log_img = Image.open(log_path).resize((150, 100))
+    log_photo = ImageTk.PhotoImage(log_img)
+    logo = Label(side, image=log_photo, bg="#2c3e50")
+    logo.image = log_photo
+except:
+    logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
+logo.pack(pady=20)
+
 
 role = Label(side, text="Role: Admin", bg="#2c3e50", fg="#bdc3c7", font=("Arial Black", 10))
 role.pack(pady=10)
@@ -55,7 +65,7 @@ box.place(x=50, y=100, width=600, height=300)
 info = Label(box, text="phpMyAdmin Database", font=("Arial Black", 14), bg="white", fg="#2c3e50")
 info.place(relx=0.5, y=50, anchor=CENTER)
 
-icon = Label(box, text="🌐", font=("Arial", 48), bg="white", fg="#f39c12")
+icon = Label(box, font=("Arial", 48), bg="white", fg="#f39c12")
 icon.place(relx=0.5, y=120, anchor=CENTER)
 
 btn2 = Button(box, text="Open phpMyAdmin", bg="#f39c12", fg="white", font=("Arial Black", 14, "bold"), width=30, pady=5, command=open_db)
