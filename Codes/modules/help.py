@@ -3,91 +3,74 @@ from PIL import Image, ImageTk
 import os
 import sys
 
-# Get the directory of the current script
-script_dir = os.path.dirname(os.path.abspath(__file__))
+path = os.path.dirname(os.path.abspath(__file__))
 
-def get_window_state():
-    """Get the current window state to pass back to the dashboard."""
+def get_state():
     if window.state() == 'zoomed':
         return 'zoomed'
-    else:
-        return window.geometry()
+    return window.geometry()
 
-def go_back():
-    state = get_window_state()
+def back():
+    st = get_state()
     window.destroy()
-    os.system(f'python "{os.path.join(script_dir, "dashboard.py")}" --window-state "{state}"')
+    os.system(f'python "{os.path.join(path, "dashboard.py")}" --window-state "{st}"')
 
 window = Tk()
-window.title("AuditPro - Help (Accounting Standards)")
+window.title("AuditPro - Help")
 window.geometry("1000x700")
 
-# Restore window state
 if '--window-state' in sys.argv:
     idx = sys.argv.index('--window-state')
     if idx + 1 < len(sys.argv):
-        state = sys.argv[idx + 1]
-        if state == 'zoomed':
+        st = sys.argv[idx + 1]
+        if st == 'zoomed':
             window.state('zoomed')
         else:
-            window.geometry(state)
+            window.geometry(st)
 
-# Sidebar
-sidebar = Frame(window, bg="#2c3e50", width=250)
-sidebar.pack(side=LEFT, fill=Y)
-sidebar.pack_propagate(False)
+side = Frame(window, bg="#2c3e50", width=250)
+side.pack(side=LEFT, fill=Y)
+side.pack_propagate(False)
 
-lbl_logo = Label(sidebar, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
-lbl_logo.pack(pady=30)
+logo = Label(side, text="AuditPro", bg="#2c3e50", fg="white", font=("Arial Black", 20, "bold"))
+logo.pack(pady=30)
 
-btn_back = Button(sidebar, text="Back to Dashboard", bg="white", font=("Arial Black", 12), width=20, command=go_back)
-btn_back.pack(pady=5)
+btn1 = Button(side, text="Back to Dashboard", bg="white", font=("Arial Black", 12), width=20, command=back)
+btn1.pack(pady=5)
 
-# Content Area
-content_area = Frame(window, bg="#e1f5fe")
-content_area.pack(side=LEFT, fill=BOTH, expand=True)
+main = Frame(window, bg="#e1f5fe")
+main.pack(side=LEFT, fill=BOTH, expand=True)
 
-lbl_title = Label(content_area, text="Accounting Standards Reference", font=("Arial Black", 20), bg="#e1f5fe", fg="#2c3e50")
-lbl_title.pack(pady=20)
+title = Label(main, text="Accounting Standards Reference", font=("Arial Black", 20), bg="#e1f5fe", fg="#2c3e50")
+title.pack(pady=20)
 
-# Frame for the Image (Scrollable if needed)
-image_frame = Frame(content_area, bg="white", bd=2, relief=GROOVE)
-image_frame.pack(padx=30, pady=10, fill=BOTH, expand=True)
+box = Frame(main, bg="white", bd=2, relief=GROOVE)
+box.pack(padx=30, pady=10, fill=BOTH, expand=True)
 
-# Add a Canvas and Scrollbar for the image
-canvas = Canvas(image_frame, bg="white")
-scrollbar = Scrollbar(image_frame, orient=VERTICAL, command=canvas.yview)
-scrollable_frame = Frame(canvas, bg="white")
+canv = Canvas(box, bg="white")
+scrol = Scrollbar(box, orient=VERTICAL, command=canv.yview)
+view = Frame(canv, bg="white")
 
-scrollable_frame.bind(
-    "<Configure>",
-    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-)
+view.bind("<Configure>", lambda e: canv.configure(scrollregion=canv.bbox("all")))
+canv.create_window((0, 0), window=view, anchor="nw")
+canv.configure(yscrollcommand=scrol.set)
 
-canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-canvas.configure(yscrollcommand=scrollbar.set)
+canv.pack(side=LEFT, fill=BOTH, expand=True)
+scrol.pack(side=RIGHT, fill=Y)
 
-canvas.pack(side=LEFT, fill=BOTH, expand=True)
-scrollbar.pack(side=RIGHT, fill=Y)
-
-# Load and Display the Image
 try:
-    img_path = os.path.join(script_dir, "..", "..", "Images", "img4.png")
-    help_img = Image.open(img_path)
-    
-    # Resize image to fit width while maintaining aspect ratio
-    original_width, original_height = help_img.size
-    display_width = 1200
-    display_height = int((display_width / original_width) * original_height)
-    
-    help_img_resized = help_img.resize((display_width, display_height), Image.Resampling.LANCZOS)
-    photo = ImageTk.PhotoImage(help_img_resized)
-    
-    img_label = Label(scrollable_frame, image=photo, bg="white")
-    img_label.image = photo  # Keep reference
-    img_label.pack()
-except Exception as e:
-    Label(scrollable_frame, text=f"Could not load 'img4.png'.\nPlease ensure the image is in the Images folder.", 
-          font=("Arial", 12), bg="white", fg="red").pack(pady=400)
+    img_path = os.path.join(path, "..", "..", "Images", "img4.png")
+    img = Image.open(img_path)
+    w, h = img.size
+    nw = 1200
+    nh = int((nw / w) * h)
+    img = img.resize((nw, nh), Image.Resampling.LANCZOS)
+    photo = ImageTk.PhotoImage(img)
+    lbl = Label(view, image=photo, bg="white")
+    lbl.image = photo
+    lbl.pack()
+except:
+    Label(view, text="Error loading image.", font=("Arial", 12), bg="white", fg="red").pack(pady=400)
 
 window.mainloop()
+
